@@ -199,8 +199,10 @@ var Tracing = (function() {
 
     return {
         trace: function (fnName) {
-            setBefore(fnName, traceBefore);
-            setAfter(fnName, traceAfter);
+            for (var i = 0; i < arguments.length; i++) {
+                setBefore(arguments[i], traceBefore);
+                setAfter(arguments[i], traceAfter);
+            }
         },
 
         before: function (fnName, fn) {
@@ -212,8 +214,10 @@ var Tracing = (function() {
         },
 
         untrace: function (fnName) {
-            if (fnName) {
-                unsetTrace(fnName);
+            if (arguments.length > 0) {
+                for (var i = 0; i < arguments.length; i++) {
+                    unsetTrace(arguments[i]);
+                }
             }
             else {
                 // If no function name given, remove all traces.
