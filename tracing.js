@@ -69,6 +69,11 @@ var Tracing = (function() {
         return curElement;
     }
 
+    // Is this function being traced?
+    function isTraced (fnName) {
+        return !isEmpty(Traces[fnName]);
+    }
+
     // Default before callback. Prints the function name and the arguments passed to it.
     function defaultBeforeTraceFn (fnName, parameters, depth) {
         depth = depth || 1;
@@ -89,7 +94,7 @@ var Tracing = (function() {
             throw "Not a valid function to trace!";
         }
 
-        if (isEmpty(Traces[fnName])) {
+        if (isTraced(fnName)) {
             throw "This function is already being traced!";
         }
 
@@ -126,7 +131,7 @@ var Tracing = (function() {
 
     // Removes a function trace.
     function unsetTrace (fnName) {
-        if (!Traces[fnName]) {
+        if (!isTraced(fnName)) {
             throw "This function is not being traced!";
         }
 
