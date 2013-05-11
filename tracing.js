@@ -1,7 +1,9 @@
 // Tracing.js
 
 var Tracing = (function() {
-    var INDENT_STRING = "  ";
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //// Global state
+    /////////////////////////////////////////////////////////////////////////////////////////////
 
     var Traces = {},
         globalObject = Function('return this')(),
@@ -10,14 +12,33 @@ var Tracing = (function() {
     // Do nothing function.
     function noop () {};
 
-    // Is the given object a function?
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //// Predicates
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
     function isFunc (obj) {
         return typeof(obj) === 'function';
     }
 
-    // Is the object empty? (undefined or null)
     function isEmpty (obj) {
-        return obj !== undefined && obj !== null;
+        return obj === undefined || obj === null;
+    }
+
+    function isTraced (fnName) {
+        return !isEmpty(Traces[fnName]);
+    }
+
+    function isString (obj) {
+        return typeof(obj) === 'string';
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //// Helpers
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Converts an arguments object into an array.
+    function arguments2array (args) {
+        return copyOwnProperties(args, []);
     }
 
     // Iterate through the object properties calling the given function.
@@ -35,16 +56,6 @@ var Tracing = (function() {
             dst[key] = val;
         });
         return dst;
-    }
-
-    // Converts an arguments object into an array.
-    function arguments2array (args) {
-        return copyOwnProperties(args, []);
-    }
-
-    // Repeat the given string the given number of times.
-    function repeatString (str, times) {
-         return (new Array(times + 1)).join(str);
     }
 
     // Traverses the object defined by the string target, if val is passed
@@ -69,25 +80,29 @@ var Tracing = (function() {
         return curElement;
     }
 
-    // Is this function being traced?
-    function isTraced (fnName) {
-        return !isEmpty(Traces[fnName]);
-    }
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //// Default tracing functions
+    /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Default before callback. Prints the function name and the arguments passed to it.
-    function defaultBeforeTraceFn (fnName, parameters, depth) {
-        depth = depth || 1;
-        console.log( ">" + repeatString(INDENT_STRING, depth) + fnName + " called with arguments: " + "(" + parameters.join(", ") + ")");
+    function traceBefore (fnName, parameters, depth) {
+        console.log(">" + (new Array(depth + 1)).join("  ") + // indentation
+                     fnName +
+                     " called with arguments: (" +
+                     parameters.join(", ") + ")");            // parameters
     }
 
     // Default after callback. Prints the function name and its return value.
-    function defaultAfterTraceFn (fnName, returnVal, depth) {
-        depth = depth || 1;
-        console.log(">" + repeatString(INDENT_STRING, depth) + fnName + " returned: " + returnVal);
+    function traceAfter (fnName, returnVal, depth) {
+        console.log(">" + (new Array(depth + 1)).join("  ") + // indentation
+                    fnName + " returned: " + returnVal);      // parameters
     }
 
-    // Sets a function trace.
-    function setTrace (fnName, options) {
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    //// Tracing fun
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+    function setTrace (fnName) {
         var target = objectTraverser(fnName);
 
         if (!isFunc(target)) {
@@ -98,11 +113,7 @@ var Tracing = (function() {
             throw "This function is already being traced!";
         }
 
-       Traces[fnName]= {
-           original: target,
-           before:   options.before || noop,
-           after:    options.after || noop
-       };
+        Traces[fnName] = { original: target, before: noop, after: noop };
 
         var trace = function () {
             var retval,
@@ -151,9 +162,41 @@ var Tracing = (function() {
         delete Traces[fnName];
     }
 
+    // Verify we are tracing this function and return a valid function to set.
+    function preprocess (fnName, fn) {
+        if (!isString(fnName)) {
+            throw "The function name should be a string.";
+        }
+
+        if (!isTraced(fnName)) {
+            setTrace(fnName);
+        }
+
+        return isFunc(fn) ? fn : noop;
+    }
+
+    function setBefore (fnName, fn) {
+        var before = preprocess(fnName, fn);
+        Traces[fnName].before = before;
+    }
+
+    function setAfter (fnName, fn) {
+        var after = preprocess(fnName, fn);
+        Traces[fnName].after = after;
+    }
+
     return {
-        trace: function (fnName, options) {
-            setTrace(fnName, options || { before: defaultBeforeTraceFn, after: defaultAfterTraceFn });
+        trace: function (fnName) {
+            setBefore(fnName, traceBefore);
+            setAfter(fnName, traceAfter);
+        },
+
+        before: function (fnName, fn) {
+            setBefore(fnName, fn);
+        },
+
+        after: function (fnName, fn) {
+            setAfter(fnName, fn);
         },
 
         untrace: function (fnName) {
@@ -163,15 +206,6 @@ var Tracing = (function() {
             else {
                 // If no function name given, remove all traces.
                 withProperties(Traces, unsetTrace);
-            }
-        },
-        // Just in case people want to use the default functions in their handlers we expose them.
-        defaults: {
-            before: function (fnName, depth, parameters) {
-                return defaultBeforeTraceFn(fnName, depth, parameters);
-            },
-            after: function (fnName, depth, returnVal) {
-                return defaultAfterTraceFn(fnName, depth, returnVal);
             }
         }
     };
