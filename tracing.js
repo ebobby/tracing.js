@@ -150,6 +150,10 @@ var Tracing = (function() {
 
     // Removes a function trace.
     function unsetTrace (fnName) {
+        if (!isString(fnName)) {
+            throw "The function name should be a string.";
+        }
+
         if (!isTraced(fnName)) {
             throw "This function is not being traced!";
         }
