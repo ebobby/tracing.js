@@ -93,21 +93,25 @@ var Tracing = (function() {
             throw "This function is already being traced!";
         }
 
-        var before = options.before || noop;
-        var after = options.after || noop;
-
-        Traces[fnName] = target;
+       Traces[fnName]= {
+           original: target,
+           before:   options.before || noop,
+           after:    options.after || noop
+       };
 
         var trace = function () {
-            var returnVal;
+            var retval,
+                env = Traces[fnName];
 
             traceDepth++;
-            before.call(this, fnName, arguments2array(arguments), traceDepth);
-            returnVal = target.apply(this, arguments);
-            after.call(this, fnName, returnVal, traceDepth);
+
+            env.before.call(this, fnName, arguments2array(arguments), traceDepth);
+            retval = env.original.apply(this, arguments);
+            env.after.call(this, fnName, retval, traceDepth);
+
             traceDepth--;
 
-            return returnVal;
+            return retval;
         };
 
         // Sometimes functions have stuff attached to them, like jQuery's $.
@@ -126,16 +130,17 @@ var Tracing = (function() {
             throw "This function is not being traced!";
         }
 
-        var tracingFunc = objectTraverser(fnName);
+        var tracingFunc = objectTraverser(fnName),
+            env = Traces[fnName];
 
         // If code added properties to the tracing function believing it was the original we need to keep them.
-        copyOwnProperties(tracingFunc, Traces[fnName]);
+        copyOwnProperties(tracingFunc, env.original);
 
         // If code modified the prototype we better keep that as well.
-        Traces[fnName].prototype = tracingFunc.prototype;
+        env.prototype = tracingFunc.prototype;
 
         // Unset the trace.
-        objectTraverser(fnName, Traces[fnName]);
+        objectTraverser(fnName, env.original);
 
         // Remove the function from our internal data structure.
         delete Traces[fnName];
