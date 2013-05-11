@@ -32,6 +32,10 @@ var Tracing = (function() {
         return typeof(obj) === 'string';
     }
 
+    function isObject (obj) {
+        return typeof(obj) === 'object';
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////////
     //// Helpers
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,8 +69,12 @@ var Tracing = (function() {
             curElement = globalObject;
 
         for (var i = 0; i < elements.length; i++) {
+            if (!isObject(curElement)) {
+                throw  "Property " + elements.slice(0, i).join('.') +  " is not an object!";
+            }
+
             if (!(elements[i] in curElement)) {
-                throw "Property not found!";
+                throw "Property " + elements.slice(0, i+1).join('.') +  " not found!";
             }
 
             // If we are setting the value...
