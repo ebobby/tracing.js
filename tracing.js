@@ -86,6 +86,7 @@ var Tracing = (function() {
 
     // Default before callback. Prints the function name and the arguments passed to it.
     function traceBefore (fnName, parameters, depth) {
+        parameters = parameters.map(JSON.stringify);
         console.log(">" + (new Array(depth + 1)).join("  ") + // indentation
                      fnName +
                      " called with arguments: (" +
@@ -95,7 +96,7 @@ var Tracing = (function() {
     // Default after callback. Prints the function name and its return value.
     function traceAfter (fnName, returnVal, depth) {
         console.log(">" + (new Array(depth + 1)).join("  ") + // indentation
-                    fnName + " returned: " + returnVal);      // parameters
+                    fnName + " returned: " + JSON.stringify(returnVal)); // return value
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////

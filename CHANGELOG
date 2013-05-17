@@ -1,0 +1,5 @@
+Tracing.js (1.0.1)
+	2013-05-16 Francisco Soto <ebobby@ebobby.org>
+	* Made trace functions use JSON.stringify on parameters and return value so tracing output is a little bit more usable.
+
+Tracing.js (1.0.0) ; initial release
