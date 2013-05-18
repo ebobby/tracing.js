@@ -169,4 +169,4 @@ Example:
 
 That's it, feel free to use the code however you see fit.
 
-If you have any questions or comments please feel free to contact me at ebobby@ebobby.com. Pull requests are welcome. You can also visit my website at: http://ebobby.org/
+If you have any questions or comments please feel free to contact me at ebobby@ebobby.org. Pull requests are welcome. You can also visit my website at: http://ebobby.org/
