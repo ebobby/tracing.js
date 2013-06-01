@@ -48,6 +48,7 @@ var Tracing = (function() {
                 fn(key, obj[key]);
             }
         }
+        return obj;
     }
 
     // Copies the owned properties from src to dst. Returns dst.
@@ -190,7 +191,8 @@ var Tracing = (function() {
         Traces[fnName].after = after;
     }
 
-    return {
+    // Tracing.js interface
+    var tracingjs = {
         trace: function (fnName) {
             for (var i = 0; i < arguments.length; i++) {
                 setBefore(arguments[i], traceBefore);
@@ -218,4 +220,20 @@ var Tracing = (function() {
             }
         }
     };
+
+    // Wrap Tracing.js functions with another function that allows it to return itself.
+    return (function wrap () {
+        var self = this;
+
+        return withProperties(self, function (key, val) {
+            if (isFunc(val)) {
+                self[key] = function () {
+                    // We are disregarding the original function return value, but that's ok here.
+                    val.apply(self, arguments2array(arguments));
+
+                    return self;
+                };
+            }
+        } );
+    }).call(tracingjs);
 }());
