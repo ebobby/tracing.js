@@ -26,8 +26,9 @@ Sets a function to be called right before the invocation of the function named b
 * arguments
   An array of arguments passed to the function.
 * depth
-  Trace depth, an integer representing the depth of traced calls. (This is not a stack depth per se).
+  Trace depth, an integer representing the depth of traced calls. (This is not a stack depth per se unless you are actually tracing every function).
 
+Returns Tracing.js itself so calls can be chained.
 
 Examples:
 
@@ -73,6 +74,8 @@ Sets a function to be called just after the invocation of the function named by 
 * depth
   Trace depth, an integer representing the depth of traced calls. (This is not a stack depth per se).
 
+Returns Tracing.js itself so calls can be chained.
+
 Examples:
 
 ```javascript
@@ -99,6 +102,8 @@ Sliced:
 
 Sets tracing on the given functions (you can pass as many functions names as you want). When the target functions get called information about them will be printed, such as the arguments and the return value, this is very useful when debugging specially recursive functions.
 
+Returns Tracing.js itself so calls can be chained.
+
 Example:
 
 ```javascript
@@ -116,7 +121,7 @@ function square (x) {
     return multiply(x, x);
 }
 
-Tracing.trace('square', 'multiply', 'add');
+Tracing.untrace().trace('square', 'multiply', 'add');
 > square(2)
 >  square called with arguments: (2)
 >    multiply called with arguments: (2, 2)
@@ -148,6 +153,8 @@ square(15)
 ###     Tracing.untrace(...)
 
 Removes tracing from the given function names, restoring the original code. You can pass as many function names as you want or if you call it without arguments it will remove every trace currently set.
+
+Returns Tracing.js itself so calls can be chained.
 
 Example:
 
