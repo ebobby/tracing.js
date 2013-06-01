@@ -38,7 +38,7 @@ var Tracing = (function() {
 
     // Converts an arguments object into an array.
     function arguments2array (args) {
-        return copyOwnProperties(args, []);
+        return Array.prototype.slice.call(args);
     }
 
     // Iterate through the object properties calling the given function.
