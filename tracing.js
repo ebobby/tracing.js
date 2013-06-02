@@ -20,12 +20,8 @@ var Tracing = (function() {
         return typeof(obj) === 'function';
     }
 
-    function isEmpty (obj) {
-        return obj === undefined || obj === null;
-    }
-
     function isTraced (fnName) {
-        return !isEmpty(Traces[fnName]);
+        return (Traces[fnName] != null && Traces[fnName] != undefined);
     }
 
     function isString (obj) {
