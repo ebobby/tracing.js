@@ -159,7 +159,7 @@ var Tracing = (function() {
         copyOwnProperties(tracingFunc, env.original);
 
         // If code modified the prototype we better keep that as well.
-        env.prototype = tracingFunc.prototype;
+        env.original.prototype = tracingFunc.prototype;
 
         // Unset the trace.
         objectTraverser(fnName, env.original);
