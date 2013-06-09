@@ -32,6 +32,50 @@ var Tracing = (function() {
     //// Helpers
     /////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Stringify function to be used as a replacer function for JSON.stringify.
+     * The output of this function is to be used for object display only, it cannot be parsed back into an object.
+     *
+     * @param {String}   key   key of the value in the object.
+     * @param {Object}   value the value of the key
+     * @return {Object}  stringified version of the value.
+     */
+    function stringify (key, value) {
+        var type = typeof(value);
+
+        if (value !== value) {
+            return "NaN";
+        }
+
+        switch (type) {
+        case "number":
+        case "string":
+        case "boolean":
+        case "undefined":
+            return value;
+        }
+
+        if ( value == null){
+            return value;
+        }
+
+        if (typeof(value) == "function") {
+            return value.toString();
+        }
+
+        return value;
+    }
+
+
+    /**
+     * Pretty print the given object.
+     * @param {Object} obj the value to pretty print.
+     * @return {String} a string representation of the given object.
+     */
+    function prettyPrint (obj) {
+        return JSON.stringify(obj, stringify);
+    }
+
     // Converts an arguments object into an array.
     function arguments2array (args) {
         return Array.prototype.slice.call(args);
@@ -83,7 +127,7 @@ var Tracing = (function() {
 
     // Default before callback. Prints the function name and the arguments passed to it.
     function traceBefore (fnName, parameters, depth) {
-        parameters = parameters.map(JSON.stringify);
+        parameters = parameters.map(prettyPrint);
         console.log(">" + (new Array(depth + 1)).join("  ") + // indentation
                      fnName +
                      " called with arguments: (" +
@@ -92,8 +136,8 @@ var Tracing = (function() {
 
     // Default after callback. Prints the function name and its return value.
     function traceAfter (fnName, returnVal, depth) {
-        console.log(">" + (new Array(depth + 1)).join("  ") + // indentation
-                    fnName + " returned: " + JSON.stringify(returnVal)); // return value
+        console.log(">" + (new Array(depth + 1)).join("  ") +         // indentation
+                    fnName + " returned: " + prettyPrint(returnVal)); // return value
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
