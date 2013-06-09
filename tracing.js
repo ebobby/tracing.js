@@ -1,4 +1,4 @@
-/*! Tracing.js v1.1.2. | (c) 2013 Francisco Soto <ebobby@ebobby.org> | See COPYING file for more info. */
+/*! Tracing.js v1.1.3. | (c) 2013 Francisco Soto <ebobby@ebobby.org> | See COPYING file for more info. */
 
 var Tracing = (function() {
     /////////////////////////////////////////////////////////////////////////////////////////////
