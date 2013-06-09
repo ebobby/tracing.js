@@ -68,7 +68,6 @@ var Tracing = (function() {
         return value;
     }
 
-
     /**
      * Pretty print the given object.
      *
@@ -180,7 +179,6 @@ var Tracing = (function() {
     /////////////////////////////////////////////////////////////////////////////////////////////
     //// Tracing fun
     /////////////////////////////////////////////////////////////////////////////////////////////
-
 
     /**
      * Sets a trace on the fully qualified function name.
