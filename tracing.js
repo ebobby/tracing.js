@@ -9,7 +9,9 @@ var Tracing = (function() {
         globalObject = Function('return this')(),
         traceDepth = 0;
 
-    // Do nothing function.
+    /**
+     * Do nothing function.
+     */
     function noop () {};
 
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +71,7 @@ var Tracing = (function() {
 
     /**
      * Pretty print the given object.
+     *
      * @param {Object} obj the value to pretty print.
      * @return {String} a string representation of the given object.
      */
@@ -76,12 +79,23 @@ var Tracing = (function() {
         return JSON.stringify(obj, stringify);
     }
 
-    // Converts an arguments object into an array.
+    /**
+     * Converts an arguments object into an array.
+     *
+     * @param {Arguments} args arguments object
+     * @return {Array} converted array
+     */
     function arguments2array (args) {
         return Array.prototype.slice.call(args);
     }
 
-    // Iterate through the object properties calling the given function.
+    /**
+     * Iterates through the own object properties calling the given function.
+     *
+     * @param {Object} obj the object we are iterating
+     * @param {Function} fn the function to call
+     * @return {Object} the object with the properties iterated through. (not a copy)
+     */
     function withProperties (obj, fn) {
         for (var key in obj) {
             if (obj.hasOwnProperty(key)) {
@@ -91,7 +105,13 @@ var Tracing = (function() {
         return obj;
     }
 
-    // Copies the owned properties from src to dst. Returns dst.
+    /**
+     * Makes a copy of the given object. Only owned properties.
+     *
+     * @param {Object} src source object
+     * @param {Object} dst destination object.
+     * @return {Object} same object as dst.
+     */
     function copyOwnProperties (src, dst) {
         withProperties(src, function(key, val) {
             dst[key] = val;
@@ -99,8 +119,14 @@ var Tracing = (function() {
         return dst;
     }
 
-    // Traverses the object defined by the string target, if val is passed
-    // we set last object value to this value, the value of the object is returned.
+    /**
+     * Traverses the object defined by the string target, if val is passed
+     * we set last object value to this value, the value of the object is returned.
+     *
+     * @param {String} target the fully qualified name of the object. Ej: "window.document".
+     * @param {Object} val (optional) if passed, the object will be set to this value.
+     * @return {Object} the value of the object.
+     */
     function objectTraverser (target, val) {
         var elements = target.split("."),
             curElement = globalObject;
@@ -125,7 +151,13 @@ var Tracing = (function() {
     //// Default tracing functions
     /////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Default before callback. Prints the function name and the arguments passed to it.
+    /**
+     * Prints the function name and the arguments passed to it with proper depth indentation.
+     *
+     * @param {String} fnName function name.
+     * @param {Array}  parameters function parameters.
+     * @param {Number} depth the depth of the traced calls.
+     */
     function traceBefore (fnName, parameters, depth) {
         parameters = parameters.map(prettyPrint);
         console.log(">" + (new Array(depth + 1)).join("  ") + // indentation
@@ -134,7 +166,12 @@ var Tracing = (function() {
                      parameters.join(", ") + ")");            // parameters
     }
 
-    // Default after callback. Prints the function name and its return value.
+    /**
+     * Prints the function name and the value returned by it with proper depth indentation.
+     * @param {String} fnName function name.
+     * @param {Object} returnVal returned value.
+     * @param {Number} depth the depth of the traced calls.
+     */
     function traceAfter (fnName, returnVal, depth) {
         console.log(">" + (new Array(depth + 1)).join("  ") +         // indentation
                     fnName + " returned: " + prettyPrint(returnVal)); // return value
@@ -144,6 +181,12 @@ var Tracing = (function() {
     //// Tracing fun
     /////////////////////////////////////////////////////////////////////////////////////////////
 
+
+    /**
+     * Sets a trace on the fully qualified function name.
+     *
+     * @param {String} fnName fully qualified function name. Ej: "Array.prototype.slice".
+     */
     function setTrace (fnName) {
         var target = objectTraverser(fnName);
 
@@ -182,7 +225,11 @@ var Tracing = (function() {
         objectTraverser(fnName, trace);
     }
 
-    // Removes a function trace.
+    /**
+     * Removes a trace on the fully qualified function name.
+     *
+     * @param {String} fnName fully qualified function name. Ej: "Array.prototype.slice".
+     */
     function unsetTrace (fnName) {
         if (!isString(fnName)) {
             throw "The function name should be a string.";
@@ -208,7 +255,14 @@ var Tracing = (function() {
         delete Traces[fnName];
     }
 
-    // Verify we are tracing this function and return a valid function to set.
+    /**
+     * Sets a trace on the fully qualified function name, also verifies the passed function,
+     * if invalid or not set it returns an empty function.
+     *
+     * @param {String} fnName fully qualified function name.
+     * @param {Function} fn (optional) function, it is simply returned if set, if not noop is returned.
+     * @return {Function} fn if set, empty function otherwise.
+     */
     function preprocess (fnName, fn) {
         if (!isString(fnName)) {
             throw "The function name should be a string.";
@@ -221,11 +275,23 @@ var Tracing = (function() {
         return isFunc(fn) ? fn : noop;
     }
 
+    /**
+     * Hooks a before event on the given function.
+     *
+     * @param {String} fnName fully qualified function to set this event to.
+     * @param (Function) fn function to call *before* fnName is called.
+     */
     function setBefore (fnName, fn) {
         var before = preprocess(fnName, fn);
         Traces[fnName].before = before;
     }
 
+    /**
+     * Hooks an after event on the given function.
+     *
+     * @param {String} fnName fully qualified function to set this event to.
+     * @param (Function) fn function to call *after* fnName is called.
+     */
     function setAfter (fnName, fn) {
         var after = preprocess(fnName, fn);
         Traces[fnName].after = after;
