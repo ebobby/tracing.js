@@ -1,4 +1,4 @@
-/*! Tracing.js v1.1.3. | (c) 2013 Francisco Soto <ebobby@ebobby.org> | See COPYING file for more info. */
+/*! Tracing.js v1.2.0. | (c) 2013 Francisco Soto <ebobby@ebobby.org> | See COPYING file for more info. */
 
 var Tracing = (function() {
     /////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,22 +43,8 @@ var Tracing = (function() {
      * @return {Object}  stringified version of the value.
      */
     function stringify (key, value) {
-        var type = typeof(value);
-
         if (value !== value) {
             return "NaN";
-        }
-
-        switch (type) {
-        case "number":
-        case "string":
-        case "boolean":
-        case "undefined":
-            return value;
-        }
-
-        if ( value == null){
-            return value;
         }
 
         if (typeof(value) == "function") {
