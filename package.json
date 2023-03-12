@@ -1,0 +1,19 @@
+{
+  "name": "@ebobby/tracingjs",
+  "version": "1.2.1",
+  "description": "A library/utility to help you debug and trace JS code.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ebobby/tracing.js.git"
+  },
+  "author": "Francisco Soto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ebobby/tracing.js/issues"
+  },
+  "homepage": "https://github.com/ebobby/tracing.js#readme"
+}

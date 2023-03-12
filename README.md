@@ -1,19 +1,31 @@
 Tracing.js - Javascript function tracing.
 ===
 
-**Tracing.js** is a library/utility to help you debug and trace javascript code.
+**Tracing.js** is a library/utility to help you debug your javascript code.
 
-Have you ever had the need to know when a function is called? Check its parameters or the return value? Of course you have, is part of regular development. This is very easy to accomplish with your code you just write some debugging output into them, or set up a breakpoint so the debugger will fire up when the code is called.
+Have you ever had the need to know when a function is called? Check its parameters or the return value? Of course you have, it's a part of a developer's life.
 
-What about third party code? Or native functions? You have the source code so is easy to go there and modify it or again, set up a breakpoint, but sometimes you don't feel like it or the code is minified and with native functions you don't have any of these options.
+You can easily accomplish it by setting a breakpoint inside your code and have the debugger fired up. But what about third party code or native functions? What if the code is minified?
 
 **Tracing.js** is here to help.
 
-Simply put, **Tracing.js** will allow you to set functions of your own to be called before or after target functions get called. It is like events for function invocations.
+Simply put, **Tracing.js** will allow you to run functions of your own before or after target functions get called. It is like events for function invocation.
 
-If you don't want to run specific code when this happens you can set up a regular trace for those functions and **Tracing.js** will print useful information when these functions get called, things like the parameters used and the return values if any.
+You can also set up a trace for those functions and **Tracing.js** will print useful information (arguments, return values)  when these functions get called.
 
 It even works for constructors and functions that have other objects attached to themselves, like jQuery's $.
+
+# Installation
+
+```shell
+$ npm install @ebobby/tracingjs
+```
+
+Import:
+
+```javascript
+import { Tracing } from "@ebobby/tracingjs";
+```
 
 # Usage
 
@@ -175,5 +187,3 @@ Example:
 ## Final remarks
 
 That's it, feel free to use the code however you see fit.
-
-If you have any questions or comments please feel free to contact me at ebobby@ebobby.org. Pull requests are welcome. You can also visit my website at: http://ebobby.org/
